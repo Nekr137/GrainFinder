@@ -4,6 +4,12 @@
 #include "Converter.h"
 #include <iostream>
 
+void Visualizer::Plot(const std::vector<double>& iY, Channel& ioCanvas) {
+	ImageRGB imageRGB(ioCanvas, ioCanvas, ioCanvas);
+	Plot(iY, imageRGB);
+	ioCanvas = imageRGB.GetRedChannelRef().Copy();
+}
+
 void Visualizer::Plot(const std::vector<double>& iY, ImageRGB& ioCanvas) {
 	int n = iY.size();
 	std::vector<double> xData(n);
@@ -23,6 +29,9 @@ void Visualizer::Plot(const std::vector<double>& iX, const std::vector<double>& 
 		static_cast<double>(ioCanvas.GetWidth() - 1),
 		static_cast<double>(ioCanvas.GetHeight() - 1)
 	};
+
+	assert(ioCanvas.GetWidth() >= n);
+
 	double ma[2] = {
 		*std::max_element(iX.begin(), iX.end()),
 		*std::max_element(iY.begin(), iY.end())
@@ -39,10 +48,10 @@ void Visualizer::Plot(const std::vector<double>& iX, const std::vector<double>& 
 		double y2 = s[1] - k[1] * iY[i];
 
 		wrapper.DrawLine(
-			static_cast<unsigned char> (x1),
-			static_cast<unsigned char> (y1),
-			static_cast<unsigned char> (x2),
-			static_cast<unsigned char> (y2),
+			static_cast<int> (x1),
+			static_cast<int> (y1),
+			static_cast<int> (x2),
+			static_cast<int> (y2),
 			color);
 	}
 	Converter::Convert(wrapper, ioCanvas);

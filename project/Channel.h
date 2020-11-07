@@ -18,6 +18,9 @@ public:
 	double FindMaxElement() const;	
 	void FindMinMaxElement(double& oMin, double& oMax) const;
 
+	void Set(size_t iCol, size_t iRow, double iValue) { _data[iCol][iRow] = iValue; }
+	double Get(size_t iCol, size_t iRow) const { return _data[iCol][iRow]; }
+
 	Channel Copy() const;
 
 	void ApplyMask(const Mask& iMask, Channel& oChannel);
@@ -27,12 +30,12 @@ public:
 	Channel& Abs();
 	Channel& Pow(const double iValue);
 	Channel& Invert();
-
-	void Set(size_t iCol, size_t iRow, double iValue) { _data[iCol][iRow] = iValue; }
-	double Get(size_t iCol, size_t iRow) const { return _data[iCol][iRow]; }
+	
+	void Crop(size_t left, size_t right, size_t top, size_t bottom, Channel& oCrop);
 
 	void Save(const std::string& iFilename) const;
 	void Show(const std::string& iTitle = "title") const;
+	void Print() const;
 
 	static Channel GradientRectangle(size_t iWidth, size_t iHeight);
 

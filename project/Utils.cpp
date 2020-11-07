@@ -13,7 +13,7 @@ Channel Load(const std::string& iFilename) {
 
 	ImageRGB rgb;
 	Converter::Convert(wr, rgb);
-	Channel res = rgb.GetBrightness();
+	Channel res = rgb.GetBrightness(ImageRGB::Brightness::Human);
 
 	return res;
 }
@@ -34,50 +34,6 @@ void ShowGradient(const Channel& iChannel) {
 	w.Show();
 }
 
-
-void Gauss5x5(Channel& iChannel, Channel& oGauss) {
-	const Mask gauss5x5 = { {
-		{ 1, 4, 7, 4, 1 },
-		{ 4, 16, 26, 16, 4 },
-		{ 7, 26, 41, 26, 7 },
-		{ 4, 16, 26, 16, 4 },
-		{ 1, 4, 7, 4, 1 }
-		}, 273 };
-
-	iChannel.ApplyMask(gauss5x5, oGauss);
-}
-void Prewitt(Channel& iChannel, Channel& oPrewittX, Channel& oPrewittY) {
-
-	const Mask prewittKernelX = { { 
-		{ -1.0, -1.0, -1.0 }, 
-		{ 0.0, 0.0, 0.0 }, 
-		{ 1.0, 1.0, 1.0 } 
-		}, 1.0 };
-	const Mask prewittKernelY = { { 
-		{ -1.0, 0.0, 1.0 }, 
-		{ -1.0, 0.0, 1.0 }, 
-		{ -1.0, 0.0, 1.0 } 
-		}, 1.0 };
-
-	iChannel.ApplyMask(prewittKernelX, oPrewittX);
-	iChannel.ApplyMask(prewittKernelY, oPrewittY);
-}
-void Sobel(Channel& iChannel, Channel& oSobelX, Channel& oSobelY) {
-
-	const Mask sobelKernelX = { { 
-		{ -1.0, -2.0, -1.0 }, 
-		{ 0.0, 0.0, 0.0 }, 
-		{ 1.0, 2.0, 1.0 } },
-		1.0 };
-	const Mask sobelKernelY = { { 
-		{ -1.0, 0.0, 1.0 }, 
-		{ -2.0, 0.0, 2.0 }, 
-		{ -1.0, 0.0, 1.0 } 
-		}, 1.0 };
-
-	iChannel.ApplyMask(sobelKernelX, oSobelX);
-	iChannel.ApplyMask(sobelKernelY, oSobelY);
-}
 Channel Median(Channel& iChannel, size_t iSize) {
 
 	std::cout << "\nMedian filtering...";
@@ -109,31 +65,53 @@ Channel Median(Channel& iChannel, size_t iSize) {
 }
 
 Mask Kernels::Contrast = { {
-	{ 0, 0, 0, 0, 0 },
-	{ 0, 0, -1, 0, 0 },
-	{ 0, -1, 5, -1, 0 },
-	{ 0, 0, -1, 0, 0 },
-	{ 0, 0, 0, 0, 0 },
-	}, 1 };
+	{ 0.0, 0.0, 0.0, 0.0, 0.0 },
+	{ 0.0, 0.0,-1.0, 0.0, 0.0 },
+	{ 0.0,-1.0, 5.0,-1.0, 0.0 },
+	{ 0.0, 0.0,-1.0, 0.0, 0.0 },
+	{ 0.0, 0.0, 0.0, 0.0, 0.0 },
+	}, 1.0 };
 
 Mask Kernels::VerticalLines = { {
-	{ -1, 2, -1 }, // fixed (changed from -1 0 -1)
-	{ -1, 2, -1 },
-	{ -1, 2, -1 }
-	}, 1 };
+	{ -1.0, 2.0, -1.0 }, // fixed (changed from -1 0 -1)
+	{ -1.0, 2.0, -1.0 },
+	{ -1.0, 2.0, -1.0 }
+	}, 1.0 };
 
 Mask Kernels::HorizontalLines = { {
-	{ -1, -1, -1 },
-	{ 2,2,2 },
-	{ -1, -1, -1 },
-	}, 1 };
+	{-1.0,-1.0,-1.0 },
+	{ 2.0, 2.0, 2.0 },
+	{-1.0,-1.0,-1.0 },
+	}, 1.0 };
 
 Mask Kernels::Gauss5x5 = { {
-	{ 1, 4, 7, 4, 1 },
-	{ 4, 16, 26, 16, 4 },
-	{ 7, 26, 41, 26, 7 },
-	{ 4, 16, 26, 16, 4 },
-	{ 1, 4, 7, 4, 1 }
-	}, 273 };
+	{ 1.0, 4.0, 7.0, 4.0, 1.0 },
+	{ 4.0, 16.0, 26.0, 16.0, 4.0 },
+	{ 7.0, 26.0, 41.0, 26.0, 7 },
+	{ 4.0, 16.0, 26.0, 16.0, 4.0 },
+	{ 1.0, 4.0, 7.0, 4.0, 1.0 }
+	}, 273.0 };
 
+Mask Kernels::PrewittX = { {
+	{ -1.0, -1.0, -1.0 },
+	{ 0.0, 0.0, 0.0 },
+	{ 1.0, 1.0, 1.0 }
+	}, 1.0 };
 
+Mask Kernels::PrewittY = { {
+	{ -1.0, 0.0, 1.0 },
+	{ -1.0, 0.0, 1.0 },
+	{ -1.0, 0.0, 1.0 }
+	}, 1.0 };
+
+Mask Kernels::SobelX = { {
+	{-1.0,-2.0,-1.0 },
+	{ 0.0, 0.0, 0.0 },
+	{ 1.0, 2.0, 1.0 } 
+	}, 1.0 };
+
+Mask Kernels::SobelY = { {
+	{ -1.0, 0.0, 1.0 },
+	{ -2.0, 0.0, 2.0 },
+	{ -1.0, 0.0, 1.0 }
+	}, 1.0 };

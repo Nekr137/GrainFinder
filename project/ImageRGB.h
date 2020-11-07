@@ -16,9 +16,11 @@ public:
 	const Channel& GetGreenChannelRef() const { return _g; }
 	const Channel& GetBlueChannelRef() const { return _b; }
 
-	Channel GetBrightness();
+	enum Brightness { Human, Mean };
+	Channel GetBrightness(const Brightness& iBrightnessType);
 
 	void Save(const std::string& iFilename);
+	void Show(const std::string& iTitle = "title");
 
 private:
 	Channel _r, _g, _b;

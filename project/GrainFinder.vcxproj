@@ -95,6 +95,7 @@
     <ClCompile Include="CImgWrapper.cpp" />
     <ClCompile Include="ImageRGB.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MathUtils.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Visualizer.cpp" />
   </ItemGroup>
@@ -104,7 +105,9 @@
     <ClInclude Include="Converter.h" />
     <ClInclude Include="CImgWrapper.h" />
     <ClInclude Include="ImageRGB.h" />
+    <ClInclude Include="MathUtils.h" />
     <ClInclude Include="tests.h" />
+    <ClInclude Include="Treatments.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Visualizer.h" />
   </ItemGroup>

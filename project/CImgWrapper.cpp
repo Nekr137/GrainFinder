@@ -50,11 +50,6 @@ void CImgWrapper::Show(const std::string& iTitle) {
 	}
 }
 
-void CImgWrapper::DrawLine(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2, const unsigned char* color) {
-	_im.draw_line(
-		static_cast<unsigned char> (x1),
-		static_cast<unsigned char> (y1),
-		static_cast<unsigned char> (x2),
-		static_cast<unsigned char> (y2),
-		color);
+void CImgWrapper::DrawLine(int x1, int y1, int x2, int y2, const unsigned char* color) {
+	_im.draw_line(x1, y1, x2, y2, color);
 }

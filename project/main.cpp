@@ -1,4 +1,5 @@
 #include "tests.h"
+#include "Treatments.h"
 
 int main() {
 	//testBitMap();
@@ -6,5 +7,9 @@ int main() {
 	//testHorSmall();
 	//testBigLine();
 	//testContrast();
-	testVertLines();
+	//testVertLines();
+	
+	//unit_tests();
+
+	treatments();
 }

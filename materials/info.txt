@@ -1,2 +1,5 @@
 grain boundaries
 delataciya
+github.com/isVoid/CImg_Canny/tree/master/src
+
+[ ! ] do not use gauss coz it smoothes thin lines!

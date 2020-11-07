@@ -7,9 +7,6 @@ Channel Load(const std::string& iFilename);
 void VisualizeGradient(const Channel& iChannel, const std::string& iFilename);
 void ShowGradient(const Channel& iChannel);
 
-void Prewitt(Channel& iChannel, Channel& oPrewittX, Channel& oPrewittY);
-void Sobel(Channel& iChannel, Channel& oSobelX, Channel& oSobelY);
-
 Channel Median(Channel& iChannel, size_t iSize);
 
 class Kernels
@@ -23,4 +20,9 @@ public:
 	static Mask HorizontalLines;
 
 	static Mask Gauss5x5;
+
+	static Mask PrewittX;
+	static Mask PrewittY;
+	static Mask SobelX;
+	static Mask SobelY;
 };

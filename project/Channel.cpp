@@ -25,6 +25,16 @@ void Channel::Show(const std::string& iTitle) const {
 	Converter::Convert(*this, wrapper);
 	wrapper.Show(iTitle);
 }
+void Channel::Print() const {
+	std::cout << "\nChannel:\n";
+	for (size_t j = 0; j < _h; ++j) {
+		for (size_t i = 0; i < _w; ++i) {
+			std::cout << _data[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+}
 Channel Channel::GradientRectangle(size_t iWidth, size_t iHeight) {
 
 	// Changes to the right
@@ -44,7 +54,6 @@ std::vector<double> Channel::Distribution() const {
 
 	Channel copy = Copy();
 	copy.Normalize();
-	copy.Normalize();
 
 	std::vector<unsigned int> distr(256);
 	for (size_t i = 0; i < _w; ++i) {
@@ -62,8 +71,10 @@ std::vector<double> Channel::Distribution() const {
 	}
 	for (size_t i = 0; i < 256; ++i) {
 		res[i] = static_cast<double>(distr[i]) / static_cast<double>(max);
-		res[i] = std::pow(res[i], 0.2);
+		//res[i] = std::pow(res[i], 0.2);
 	}
+
+	for (auto& d : res) d = std::sqrt(d);
 	return res;
 }
 
@@ -191,7 +202,17 @@ Channel& Channel::Invert() {
 	return *this;
 }
 
-
+void Channel::Crop(size_t left, size_t right, size_t top, size_t bottom, Channel& oCrop) {
+	assert(_w > left + right);
+	assert(_h > top + bottom);
+	oCrop = Channel(_w - left - right, _h - top - bottom);
+	for (size_t i = left; i < _w - right; ++i) {
+		for (size_t j = top; j < _h - bottom; ++j) {
+			double value = _data[i][j];
+			oCrop.Set(i-left, j-top, value);
+		}
+	}
+}
 
 void Channel::ApplyMask(const Mask& iMask, Channel& oChannel) {
 
@@ -202,8 +223,8 @@ void Channel::ApplyMask(const Mask& iMask, Channel& oChannel) {
 
 	oChannel = Channel(_w, _h);
 
-	for (size_t i = 0; i < _w - maskSize; ++i) {
-		for (size_t j = 0; j < _h - maskSize; ++j) {
+	for (size_t i = 0; i < _w - maskSize + 1; ++i) {
+		for (size_t j = 0; j < _h - maskSize + 1; ++j) {
 
 			double value = 0.0;
 
