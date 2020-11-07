@@ -93,6 +93,7 @@
     <ClCompile Include="Channel.cpp" />
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="CImgWrapper.cpp" />
+    <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="ImageRGB.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathUtils.cpp" />
@@ -104,6 +105,7 @@
     <ClInclude Include="CImg.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="CImgWrapper.h" />
+    <ClInclude Include="FileUtils.h" />
     <ClInclude Include="ImageRGB.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="tests.h" />
