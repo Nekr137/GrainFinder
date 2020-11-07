@@ -67,6 +67,15 @@
     <BuildLog>
       <Path />
     </BuildLog>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+      <Command>copy "$(ProjectDir)\convert.exe" "$(TargetDir)\"; </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -88,6 +97,9 @@
     <BuildLog>
       <Path />
     </BuildLog>
+    <PreBuildEvent>
+      <Command>copy "$(ProjectDir)\convert.exe" "$(TargetDir)\"; </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Channel.cpp" />
@@ -112,6 +124,9 @@
     <ClInclude Include="Treatments.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Visualizer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="convert.exe" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

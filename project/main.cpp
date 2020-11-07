@@ -22,11 +22,15 @@ int main(int argc, char** argv) {
     }
   }
 
+  if (fileName.empty()) {
+    printf("[ error ] Filename is empty");
+    return 0;
+  }
+
 
   auto fileFullPath = FileUtils::GetFullPath(fileName);
   printf("Input File: %s\n", fileFullPath.c_str());
 
-  fileName = FileUtils::GetFileName(fileFullPath);
   auto fileDir = FileUtils::GetPath(fileFullPath);
 
   if (!outputPath.empty() && outputPath.find(":") == std::string::npos) {

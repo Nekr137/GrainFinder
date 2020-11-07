@@ -25,7 +25,7 @@ void Channel::Show(const std::string& iTitle) const {
 	Converter::Convert(*this, wrapper);
 	wrapper.Show(iTitle);
 }
-void Channel::Print() const {
+Channel& Channel::Print() {
 	std::cout << "\nChannel:\n";
 	for (size_t j = 0; j < _h; ++j) {
 		for (size_t i = 0; i < _w; ++i) {
@@ -34,6 +34,7 @@ void Channel::Print() const {
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
+  return *this;
 }
 Channel Channel::GradientRectangle(size_t iWidth, size_t iHeight) {
 
@@ -91,6 +92,44 @@ Channel Channel::AsBitMap(const double& iThreshold) const {
 	return bitmap;
 }
 
+double Channel::FindMean() const {
+  double mean = 0.0;
+  for (size_t i = 0; i < _w; ++i) {
+    for (size_t j = 0; j < _h; ++j) {
+      double value = _data[i][j];
+      mean += value;
+    }
+  }
+  return mean / _w / _h;
+}
+
+double Channel::FindMedian() const {
+  std::vector<double> v;
+  for (size_t i = 0; i < _w; ++i) {
+    for (size_t j = 0; j < _h; ++j) {
+      double value = _data[i][j];
+      v.push_back(value);
+    }
+  }
+  std::sort(v.begin(), v.end());
+  return v[v.size()/2];
+}
+
+double Channel::FindSigma() const {
+  double mean = FindMean();
+  double mean2 = mean*mean;
+  double sigma = 0.0;
+  for (size_t i = 0; i < _w; ++i) {
+    for (size_t j = 0; j < _h; ++j) {
+      double value = _data[i][j];
+      double d = value - mean;
+      sigma += std::sqrt(d*d);
+    }
+  }
+  double n = static_cast<double>(_w + _h);
+  return sigma / std::sqrt(n) / n;
+}
+
 double Channel::FindMinElement() const {
 	double min = _data.front().front();
 	for (size_t i = 0; i < _w; ++i) {
@@ -137,6 +176,26 @@ Channel Channel::Copy() const {
 		}
 	}
 	return copy;
+}
+
+Channel Channel::GetInRange(const double iColorMin, const double iColorMax,
+                            const double iColorForLower, const double iColorForUpper) const {
+
+  auto inRange = [iColorMin, iColorMax](const double iValue) {return iColorMin <= iValue && iColorMax >= iValue; };
+
+  Channel res(_w, _h);
+  for (size_t i = 0; i < _w; ++i) {
+    for (size_t j = 0; j < _h; ++j) {
+      double val = _data[i][j];
+      if (val < iColorMin)
+        res.Set(i, j, iColorForLower);
+      else if (val > iColorMax)
+        res.Set(i, j, iColorForUpper);
+      else
+        res.Set(i, j, val);
+    }
+  }
+  return res;
 }
 
 Channel& Channel::Normalize() {
@@ -202,6 +261,30 @@ Channel& Channel::Invert() {
 	return *this;
 }
 
+Channel& Channel::RemoveOutlets(const double iSigmas) {
+
+  double mean = FindMean();
+  double sigma = FindSigma();
+  //double median = FindMedian();
+  double l = mean - iSigmas * sigma;
+  double h = mean + iSigmas * sigma;
+  (*this) = GetInRange(l, h, mean, mean);
+  return *this;
+}
+
+Channel& Channel::InvertFrom(const double iColor) {
+  for (size_t i = 0; i < _w; ++i) {
+    for (size_t j = 0; j < _h; ++j) {
+      double value = _data[i][j];
+      if (value < iColor) {
+        double dif = iColor - value;
+        _data[i][j] = value + dif;
+      }
+    }
+  }
+  return *this;
+}
+
 void Channel::Crop(size_t left, size_t right, size_t top, size_t bottom, Channel& oCrop) {
 	assert(_w > left + right);
 	assert(_h > top + bottom);
@@ -241,6 +324,29 @@ void Channel::ApplyMask(const Mask& iMask, Channel& oChannel) {
 			oChannel.Set(i + ctr, j + ctr, value);
 		}
 	}
+
+  // borders
+  for (size_t k = 0; k < ctr; k++) {
+    size_t d = ctr - k;
+
+    // corners
+    oChannel.Set(d-1, d-1, oChannel.Get(d, d));
+    oChannel.Set(_w-d, d-1, oChannel.Get(_w-d-1, d));
+    oChannel.Set(d-1, _h-d, oChannel.Get(d, _h-d-1));
+    oChannel.Set(_w-d, _h-d, oChannel.Get(_w-d-1, _h-d-1));
+
+    // lines
+    for (size_t side = 0; side < 2; ++side) {
+      for (size_t i = d-1; i < _w-d; ++i) {
+        oChannel.Set(i,d-1, oChannel.Get(i, d));
+        oChannel.Set(i,_h-d, oChannel.Get(i,_h-d-1));
+      }
+      for (size_t i = d; i < _h - d; ++i) {
+        oChannel.Set(d-1, i, oChannel.Get(d, i));
+        oChannel.Set(_w-d,i, oChannel.Get(_w-d-1,i));
+      }
+    }
+  }
 }
 
 

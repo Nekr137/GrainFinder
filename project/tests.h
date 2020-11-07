@@ -13,54 +13,130 @@ using namespace std;
 
 
 bool IsEqual(const double iV1, const double iV2, const double iTol = 1e-12) {
-	return std::abs(iV2 - iV1) < iTol;
+  return std::abs(iV2 - iV1) < iTol;
+}
+
+void unit_test_find_median() {
+  size_t w = 10, h = 10;
+  Channel ch(w, h);
+  for (size_t i = 0; i < w; ++i) {
+    for (size_t j = 0; j < h; ++j) {
+      ch.Set(i, j, 2);
+    }
+  }
+  ch.Set(w / 2, h / 2, 100);
+  double median = ch.FindMedian();
+  ch.Print();
+}
+
+void unit_test_apply_mask() {
+  {
+    size_t w = 20, h = 16;
+
+    Channel ch(w, h);
+    for (size_t i = 0; i < w; ++i)
+      for (size_t j = 0; j < h; ++j)
+        ch.Set(i, j, i + j);
+
+    Mask m = {{
+      {1, 1, 1, 1, 1},
+      {1, 1, 1, 1, 1},
+      {1, 1, 1, 1, 1},
+      {1, 1, 1, 1, 1},
+      {1, 1, 1, 1, 1},
+      }, 25};
+
+    ch.Print().ApplyMask(m).Print();
+  }
 }
 
 void unit_test_normalize() {
-	{
-		Channel ch(3, 3);
-		ch.Set(0, 0, -3.0); ch.Set(1, 1, -2.0); ch.Set(2, 0, -1.0);
-		ch.Set(0, 1, 0.0); ch.Set(1, 1, 1.0); ch.Set(2, 1, 2.0);
-		ch.Set(0, 2, 3.0); ch.Set(1, 2, 4.0); ch.Set(2, 2, 5.0);
-		ch.Normalize();
-		for (size_t i = 0; i < 3; ++i) {
-			for (size_t j = 0; j < 3; ++j) {
-				assert(ch.Get(i, j) < 1.0 + 1e-12);
-				assert(ch.Get(i, j) > -1e-12);
-			}
-		}
-	}
-	{
-		Channel ch(2, 2);
-		ch.Set(0, 0, -2.0); ch.Set(0, 1, +2.0);
-		ch.Normalize();
-		assert(IsEqual(ch.Get(0, 0), 0.0));
-		assert(IsEqual(ch.Get(0, 1), 1.0));
-		assert(IsEqual(ch.Get(1, 0), 0.5));
-		assert(IsEqual(ch.Get(1, 1), 0.5));
-	}
+  {
+    Channel ch(3, 3);
+    ch.Set(0, 0, -3.0); ch.Set(1, 1, -2.0); ch.Set(2, 0, -1.0);
+    ch.Set(0, 1, 0.0); ch.Set(1, 1, 1.0); ch.Set(2, 1, 2.0);
+    ch.Set(0, 2, 3.0); ch.Set(1, 2, 4.0); ch.Set(2, 2, 5.0);
+    ch.Normalize();
+    for (size_t i = 0; i < 3; ++i) {
+      for (size_t j = 0; j < 3; ++j) {
+        assert(ch.Get(i, j) < 1.0 + 1e-12);
+        assert(ch.Get(i, j) > -1e-12);
+      }
+    }
+  }
+  {
+    Channel ch(2, 2);
+    ch.Set(0, 0, -2.0); ch.Set(0, 1, +2.0);
+    ch.Normalize();
+    assert(IsEqual(ch.Get(0, 0), 0.0));
+    assert(IsEqual(ch.Get(0, 1), 1.0));
+    assert(IsEqual(ch.Get(1, 0), 0.5));
+    assert(IsEqual(ch.Get(1, 1), 0.5));
+  }
+  {
+    size_t w = 21, h = 21;
+    Channel ch(w, h);
+    for (size_t i = 0; i < w; ++i) {
+      for(size_t j = 0; j < h; ++j) {
+        if (i < h / 3)
+          ch.Set(i, j, -1.0);
+        if (i > 2 * h / 3)
+          ch.Set(i, j, 1.0);
+      }
+    }
+    ch.Print();
+    ch.Normalize().Print();
+  }
 }
-void unit_test_vertical_edge() {
-	const size_t w = 10;
-	const size_t h = 6;
-	Channel ch(w, h);
-	for (size_t i = w / 2; i < w; ++i){
-		for (size_t j = 0; j < h; ++j) {
-			ch.Set(i, j, 1.0);
-		}
-	}
+void unit_test_edge() {
+  {
+    const size_t w = 24;
+    const size_t h = 24;
+    Channel ch(w, h);
+    for (size_t i = 0; i < w; ++i) {
+      for (size_t j = 0; j < h / 3; ++j) {
+        ch.Set(i, j, 1.0);
+      }
+      for (size_t j = 2 * h / 3; j < h; ++j) {
+        ch.Set(i, j, 1.0);
+      }
+    }
 
-	std::cout << "\nOriginal:\n";
-	ch.Print();
+    std::cout << "\nOriginal:\n";
+    ch.Print();
 
-	std::cout << "\nPrewittX:\n";
-	ch.ApplyMask(Kernels::PrewittX).Print();
+    std::cout << "\nPrewittY:\n";
+    ch.ApplyMask(Kernels::PrewittY).Print();
 
-	std::cout << "\nSobelX:\n";
-	ch.ApplyMask(Kernels::SobelX).Print();
+    std::cout << "\nSobelY:\n";
+    ch.ApplyMask(Kernels::SobelY).Print();
 
-	std::cout << "\nGauss5x5:\n";
-	ch.ApplyMask(Kernels::Gauss5x5).Print();
+    std::cout << "\nGauss5x5:\n";
+    ch.ApplyMask(Kernels::Gauss5x5).Print();
+  }
+
+  {
+    const size_t w = 10;
+    const size_t h = 6;
+    Channel ch(w, h);
+    for (size_t i = w / 2; i < w; ++i) {
+      for (size_t j = 0; j < h; ++j) {
+        ch.Set(i, j, 1.0);
+      }
+    }
+
+    std::cout << "\nOriginal:\n";
+    ch.Print();
+
+    std::cout << "\nPrewittX:\n";
+    ch.ApplyMask(Kernels::PrewittX).Print();
+
+    std::cout << "\nSobelX:\n";
+    ch.ApplyMask(Kernels::SobelX).Print();
+
+    std::cout << "\nGauss5x5:\n";
+    ch.ApplyMask(Kernels::Gauss5x5).Print();
+  }
 }
 
 void unit_test_distribution() {
@@ -124,10 +200,12 @@ void unit_test_crop() {
 }
 
 void unit_tests() {
+  unit_test_find_median();
+  unit_test_apply_mask();
+  unit_test_normalize();
+  unit_test_edge();
 	unit_test_distribution();
 	unit_test_crop();
-	unit_test_vertical_edge();
-	unit_test_normalize();
 }
 
 void testVertLines() {

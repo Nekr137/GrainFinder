@@ -23,6 +23,10 @@ public:
 
 	static Mask PrewittX;
 	static Mask PrewittY;
-	static Mask SobelX;
-	static Mask SobelY;
+	static Mask SobelX; // gradient north
+	static Mask SobelY; // gradient west
+  static Mask NorthEast;
+  static Mask NorthWest;
+  static Mask SouthEast;
+  static Mask SouthWest;
 };
