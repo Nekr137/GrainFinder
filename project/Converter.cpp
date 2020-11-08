@@ -60,9 +60,11 @@ void Converter::Convert(const Channel& iChannel, CImgWrapper& oCImgWrapper) {
 	for (size_t i = 0; i < w; ++i) {
 		for (size_t j = 0; j < h; ++j) {
 			double color = iChannel.Get(i, j);
+
 			assert(color > 0.0 - 1e-12);
+			assert(color < 1.0 + 1e-12);
 			unsigned char c = static_cast<unsigned char>(color * 255.0);
-			assert(c < 256 && c >= 0);
+
 			unsigned char color3[3] = { c, c, c };
 			im.draw_point(i, j, color3);
 		}

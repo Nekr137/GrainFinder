@@ -51,6 +51,8 @@ public:
 
 	Channel operator +(const Channel& iOther);
 
+	double AskUserAboutAColor(const double iDefault) const;
+
 private:
 	// pixel color from 0.0 to 1.0
 	std::vector<std::vector<double>> _data; // [col][row]

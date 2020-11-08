@@ -349,9 +349,22 @@ void Channel::ApplyMask(const Mask& iMask, Channel& oChannel) {
   }
 }
 
-
 Channel Channel::ApplyMask(const Mask& iMask) {
 	Channel ch;
 	ApplyMask(iMask, ch);
 	return ch;
+}
+
+double Channel::AskUserAboutAColor(const double iDefault) const {
+
+	ImageRGB im(*this, *this, *this);
+
+	double r, g, b;
+	bool selected = im.AskUserAboutAColor(r, g, b);
+	if (!selected)
+		return iDefault;
+
+	double br = ImageRGB::GetBrightness(r, g, b, ImageRGB::Brightness::Human);
+
+	return br;
 }

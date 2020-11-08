@@ -29,4 +29,6 @@ public:
   static Mask NorthWest;
   static Mask SouthEast;
   static Mask SouthWest;
+
+  static Mask Sharpness;
 };

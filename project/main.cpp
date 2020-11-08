@@ -49,5 +49,5 @@ int main(int argc, char** argv) {
   
   outputPath = FileUtils::GetPathWithLastBackslash(outputPath);
 
-  treatment1(fileFullPath, outputPath);
+  treatment2(fileFullPath, outputPath);
 }

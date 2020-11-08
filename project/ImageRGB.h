@@ -17,13 +17,23 @@ public:
 	const Channel& GetBlueChannelRef() const { return _b; }
 
 	enum Brightness { Human, Mean };
+
+	static double GetBrightness(const double r, const double g, const double b, const Brightness& iBrightnessType);
 	Channel GetBrightness(const Brightness& iBrightnessType);
 
 	void Save(const std::string& iFilename);
 	void Show(const std::string& iTitle = "title");
 
+	bool AskUserAboutAColor(double& oR, double& oG, double& oB);
+
 private:
 	Channel _r, _g, _b;
 	size_t _w = 0, _h = 0;
+
+	struct BrightnessCoeff
+	{
+		static std::vector<double> Human;
+		static std::vector<double> Mean;
+	};
 };
 

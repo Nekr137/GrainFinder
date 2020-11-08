@@ -13,6 +13,119 @@
 
 using namespace std;
 
+void AskAboutColors(const Channel& iChannel, double& oBorderColors, double& oGrainColors) {
+
+	std::cout << "\nInter a borders color:";
+	oBorderColors = iChannel.AskUserAboutAColor(oBorderColors);
+	std::cout << "\t" << static_cast<int>(oBorderColors * 255);
+
+	std::cout << "\nInter a grains color:";
+	oGrainColors = iChannel.AskUserAboutAColor(oGrainColors);
+	std::cout << "\t" << static_cast<int>(oGrainColors * 255);
+}
+
+
+void treatment2(const std::string& iFile, const std::string& oFolder) {
+
+	auto loaded = Load(iFile);
+
+	double borderColor = 0.36, grainColor = 0.59;
+
+	// AskAboutColors(loaded, borderColor, grainColor);
+}
+
+
+
+void treatment4(const std::string& iFile, const std::string& oFolder) {
+
+	Mask m;
+	size_t w = 101, h = 101;
+	m.second = 0.0;
+	for (size_t j = 0; j < h; ++j) {
+		std::vector<double> row;
+		for (size_t i = 0; i < w; ++i) {
+			if (i == w / 2 || j == h / 2 || i == j || i == h - j) {
+				row.push_back(1.0);
+				m.second += 1.0;
+			}
+			else
+				row.push_back(0.0);
+		}
+		m.first.push_back(row);
+	}
+
+	auto loaded = Load(iFile);
+	loaded.Save(oFolder + "01_loaded.jpg");
+
+	loaded = loaded.ApplyMask(Kernels::Gauss5x5);
+	loaded.Normalize();
+
+	auto v = loaded.Copy();
+
+	Channel im = loaded.ApplyMask(m);
+
+	im.Normalize().Save(oFolder + "02_bigMask.jpg");
+}
+
+void treatment3(const std::string& iFile, const std::string& oFolder) {
+
+	auto loaded = Load(iFile);
+	loaded.Save(oFolder + "01_loaded.jpg");
+
+	loaded = loaded.ApplyMask(Kernels::Gauss5x5);
+	loaded.Normalize();
+
+	Mask extV = { {
+		{ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+		}, 9.0 };
+	Mask extH = { {
+		{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+		}, 9.0 };
+	Mask extA = { {
+		{ 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 },
+		{ 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0 },
+		{ 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 },
+		{ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 },
+		{ 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 },
+		{ 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0 },
+		{ 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0 },
+		{ 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 },
+		}, 33.0 };
+
+	auto v = loaded.Copy();
+	auto h = loaded.Copy();
+	auto a = loaded.Copy();
+
+	for (size_t i = 0; i < 100; ++i) {
+		v = v.ApplyMask(extV);
+		h = h.ApplyMask(extH);
+		a = a.ApplyMask(extA);
+	}
+
+	(v + h).Normalize().Save(oFolder + "02_sum.jpg");
+	a.Normalize().Save(oFolder + "03_all.jpg");
+	v.Normalize().Save(oFolder + "03_extV.jpg");
+	h.Normalize().Save(oFolder + "04_extH.jpg");
+
+}
+
 
 void treatment1(const std::string& iFile, const std::string& oFolder) {
 
