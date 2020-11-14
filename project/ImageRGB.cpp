@@ -66,3 +66,13 @@ bool ImageRGB::AskUserAboutAColor(double& oR, double& oG, double& oB) {
 
 	return true;
 }
+void ImageRGB::Set(const size_t i, const size_t j, const double iR, const double iG, const double iB) {
+	_r.Set(i, j, iR);
+	_g.Set(i, j, iG);
+	_b.Set(i, j, iB);
+}
+void ImageRGB::Get(const size_t i, const size_t j, double& oR, double& oG, double& oB) const {
+	oR = _r.Get(i, j);
+	oG = _g.Get(i, j);
+	oB = _b.Get(i, j);
+}

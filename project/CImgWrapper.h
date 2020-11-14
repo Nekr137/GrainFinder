@@ -28,6 +28,8 @@ public:
 
 	bool AskUserAboutAColor(unsigned char& oR, unsigned char& oG, unsigned char& oB);
 
+	void Resize();
+
 private:
 	CImg<unsigned char> _im;
 };

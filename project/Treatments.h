@@ -10,6 +10,7 @@
 #include <assert.h>
 #include "MathUtils.h"
 #include <algorithm>
+#include "Slic.h"
 
 using namespace std;
 
@@ -27,11 +28,13 @@ void AskAboutColors(const Channel& iChannel, double& oBorderColors, double& oGra
 
 void treatment2(const std::string& iFile, const std::string& oFolder) {
 
-	auto loaded = Load(iFile);
+	CImgWrapper wr(iFile);
+	ImageRGB rgb;
+	Converter::Convert(wr, rgb);
 
-	double borderColor = 0.36, grainColor = 0.59;
-
-	// AskAboutColors(loaded, borderColor, grainColor);
+	Slic slic(&rgb);
+	slic.Perform(20, 0.1);
+	slic.Show();
 }
 
 

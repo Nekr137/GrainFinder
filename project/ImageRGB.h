@@ -16,6 +16,9 @@ public:
 	const Channel& GetGreenChannelRef() const { return _g; }
 	const Channel& GetBlueChannelRef() const { return _b; }
 
+	void Get(const size_t i, const size_t j, double& oR, double& oG, double& oB) const;
+	void Set(const size_t i, const size_t j, const double iR, const double iG, const double iB);
+
 	enum Brightness { Human, Mean };
 
 	static double GetBrightness(const double r, const double g, const double b, const Brightness& iBrightnessType);
