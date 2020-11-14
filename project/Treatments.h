@@ -32,6 +32,19 @@ void treatment2(const std::string& iFile, const std::string& oFolder, const size
 	ImageRGB rgb;
 	Converter::Convert(wr, rgb);
 
+	Channel& r = rgb.GetRedChannelRef();
+	Channel& g = rgb.GetGreenChannelRef();
+	Channel& b = rgb.GetBlueChannelRef();
+
+	for (size_t i = 0; i < 1; ++i) {
+		r = r.ApplyMask(Kernels::Gauss5x5);
+		g = g.ApplyMask(Kernels::Gauss5x5);
+		b = b.ApplyMask(Kernels::Gauss5x5);
+	}
+	r.Normalize();
+	g.Normalize();
+	b.Normalize();
+
 	SLIC::Slic slic(&rgb);
 	slic.Perform(iGrainsCnt, iCompactness);
 	slic.Show();

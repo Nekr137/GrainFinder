@@ -16,6 +16,10 @@ public:
 	const Channel& GetGreenChannelRef() const { return _g; }
 	const Channel& GetBlueChannelRef() const { return _b; }
 
+	Channel& GetRedChannelRef() { return _r; }
+	Channel& GetGreenChannelRef() { return _g; }
+	Channel& GetBlueChannelRef() { return _b; }
+
 	void Get(const size_t i, const size_t j, double& oR, double& oG, double& oB) const;
 	void Set(const size_t i, const size_t j, const double iR, const double iG, const double iB);
 
@@ -28,6 +32,8 @@ public:
 	void Show(const std::string& iTitle = "title");
 
 	bool AskUserAboutAColor(double& oR, double& oG, double& oB);
+
+	void DrawLine(int iX0, int iY0, int iX1, int iY1, std::vector<int>& oX, std::vector<int>& oY);
 
 private:
 	Channel _r, _g, _b;

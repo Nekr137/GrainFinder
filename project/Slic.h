@@ -20,6 +20,7 @@ namespace SLIC
 		Cluster(double l, double a, double b, double x, double y) {
 			this->l = l; this->a = a; this->b = b; this->x = x; this->y = y;
 		}
+		void GetSize(size_t& oW, size_t& oH) const;
 		bool IsBorderPixel(size_t pxlIdx) const;
 		std::vector<P2D> _aPixels;
 		double l = 0.0, a = 0.0, b = 0.0;
@@ -37,6 +38,10 @@ namespace SLIC
 
 	private:
 		double ClusterToPixelDist(const Cluster& iCl, const P2D& iPixel);
+		double FindEuqlDist(const Cluster& iCl, const P2D& iPixel);
+		double FindColorDist(const Cluster& iCl, const P2D& iPixel);
+		void FindLine(int iX0, int iY0, int iX1, int iY1, std::vector<int>& oX, std::vector<int>& oY);
+		double LineGradient(const Cluster& iCl, const P2D& iPixel);
 		void DrawPoint(ImageRGB& ioImage, const int x, const int y, const P3D iColor, const int iSize) const;
 
 		std::vector<Cluster> _aClusters;
