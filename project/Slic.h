@@ -3,16 +3,8 @@
 #include <vector>
 #include "ImageRGB.h"
 
-
-class Slic {
-
-public:
-
-	Slic(const ImageRGB* ipImage);
-	bool Perform(const size_t K = 40, const double m = 10.0);
-	void Show() const;
-
-private:
+namespace SLIC
+{
 	struct P2D {
 		P2D(){};
 		P2D(size_t iX, size_t iY) : x(iX), y(iY) {}
@@ -34,11 +26,22 @@ private:
 		double x = 0.0, y = 0.0;
 	};
 
-	double ClusterToPixelDist(const Cluster& iCl, const P2D& iPixel);
-	void DrawPoint(ImageRGB& ioImage, const int x, const int y, const P3D iColor, const int iSize) const;
 
-	std::vector<Cluster> _aClusters;
-	const ImageRGB* _pImage;
-	size_t _imgW = 0, _imgH = 0;
-	double _S, _m;
+	class Slic {
+
+	public:
+
+		Slic(const ImageRGB* ipImage);
+		bool Perform(const size_t K = 40, const double m = 10.0);
+		void Show() const;
+
+	private:
+		double ClusterToPixelDist(const Cluster& iCl, const P2D& iPixel);
+		void DrawPoint(ImageRGB& ioImage, const int x, const int y, const P3D iColor, const int iSize) const;
+
+		std::vector<Cluster> _aClusters;
+		const ImageRGB* _pImage;
+		size_t _imgW = 0, _imgH = 0;
+		double _S, _m;
+	};
 };

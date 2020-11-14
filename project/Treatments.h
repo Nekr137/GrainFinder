@@ -26,14 +26,14 @@ void AskAboutColors(const Channel& iChannel, double& oBorderColors, double& oGra
 }
 
 
-void treatment2(const std::string& iFile, const std::string& oFolder) {
+void treatment2(const std::string& iFile, const std::string& oFolder, const size_t iGrainsCnt, const double iCompactness) {
 
 	CImgWrapper wr(iFile);
 	ImageRGB rgb;
 	Converter::Convert(wr, rgb);
 
-	Slic slic(&rgb);
-	slic.Perform(20, 0.1);
+	SLIC::Slic slic(&rgb);
+	slic.Perform(iGrainsCnt, iCompactness);
 	slic.Show();
 }
 

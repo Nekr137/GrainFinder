@@ -7,6 +7,8 @@
 int main(int argc, char** argv) {
 
   std::string fileName, outputPath;
+  size_t grainsCnt = 10;
+  double compactness = 0.1;
 
   for (int i = 1; i < argc; ++i) {
     if (argv[i][0] != '-') {
@@ -19,6 +21,21 @@ int main(int argc, char** argv) {
         break;
       case 'u':
         unit_tests();
+		break;
+	  case 'n':
+	  {
+		  std::string str;
+		  str.assign(argv[++i]);
+		  grainsCnt = std::stoi(str);
+		  break;
+	  }
+	  case 'c':
+	  {
+		  std::string str;
+		  str.assign(argv[++i]);
+		  compactness = std::stod(str);
+		  break;
+	  }
     }
   }
 
@@ -30,6 +47,8 @@ int main(int argc, char** argv) {
 
   auto fileFullPath = FileUtils::GetFullPath(fileName);
   printf("Input File: %s\n", fileFullPath.c_str());
+  printf("Grains count: %d\n", grainsCnt);
+  printf("Compactness: %f\n", compactness);
 
   auto fileDir = FileUtils::GetPath(fileFullPath);
 
@@ -49,5 +68,5 @@ int main(int argc, char** argv) {
   
   outputPath = FileUtils::GetPathWithLastBackslash(outputPath);
 
-  treatment2(fileFullPath, outputPath);
+  treatment2(fileFullPath, outputPath, grainsCnt, compactness);
 }
