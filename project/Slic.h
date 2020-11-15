@@ -22,8 +22,8 @@ namespace SLIC
 			sy = static_cast<size_t>(std::round(y));
 		}
 		std::vector<P2D> _aPixels;
-		double l = 0.0, a = 0.0, b = 0.0;
 		double x = 0.0, y = 0.0;
+		double l = 0.0, a = 0.0, b = 0.0;
 		size_t sx = 0, sy = 0;
 	};
 

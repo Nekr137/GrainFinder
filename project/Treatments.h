@@ -36,7 +36,7 @@ void treatment2(const std::string& iFile, const std::string& oFolder, const size
 	Channel& g = rgb.GetGreenChannelRef();
 	Channel& b = rgb.GetBlueChannelRef();
 
-	for (size_t i = 0; i < 1; ++i) {
+	for (size_t i = 0; i < 3; ++i) {
 		r = r.ApplyMask(Kernels::Gauss5x5);
 		g = g.ApplyMask(Kernels::Gauss5x5);
 		b = b.ApplyMask(Kernels::Gauss5x5);

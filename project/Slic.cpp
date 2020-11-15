@@ -74,14 +74,12 @@ namespace SLIC
 			}
 		}
 
-		size_t nClusters = _aClusters.size();
-
-		std::vector<double> distances(_imgW * _imgH * nClusters);
-		std::vector<double> distancesFixed(_imgW * _imgH * nClusters);
-		
-
 		const size_t slicIterationsCnt = 4;
 		for (size_t iter = 0; iter < 4; ++iter) {
+
+			size_t nClusters = _aClusters.size();
+			std::vector<double> distances(_imgW * _imgH * nClusters-1, 1e100);
+			std::vector<double> distancesFixed(_imgW * _imgH * nClusters-1, 1e100);
 
 			std::cout << "\n [ SLIC ] iter: " << iter << " of " << slicIterationsCnt;
 			// 
@@ -99,7 +97,8 @@ namespace SLIC
 				for (size_t i = stX; i < enX; ++i) {
 					for (size_t j = stY; j < enY; ++j) {
 						const P2D px(i, j);
-						distances[i*j*k] = ClusterToPixelDist(cl, px);
+						auto distIdx = i + j * _imgW + k * _imgW * _imgH;
+						distances[distIdx] = ClusterToPixelDist(cl, px);
 					}
 				}
 			}
@@ -123,17 +122,21 @@ namespace SLIC
 						if (n < 2)
 							continue;
 
+						n -= 1;
+
 						double sum = 0.0, max = 0.0;
 						for (size_t m = 1; m < n; ++m) {
-							double dist = distances[xx[m] * yy[m] * k];
+							size_t distIdx = xx[m] + yy[m] * _imgW + k * _imgW * _imgH;
+							double dist = distances[distIdx];
 							sum += dist;
 							if (max < dist) max = dist;
 						}
 
 						// additive = max / mean
 						double additive = max / sum * static_cast<double>(n);
-						double& distance = distancesFixed[i * j * k];
-						//distance += 0.001 * additive;
+						size_t distIdx = i + j * _imgW + k * _imgW * _imgH;
+						double& distance = distancesFixed[distIdx];
+						distance += 0.0 * additive;
 					}
 				}
 			}
@@ -151,11 +154,11 @@ namespace SLIC
 
 				for (size_t i = stX; i < enX; ++i) {
 					for (size_t j = stY; j < enY; ++j) {
-
-						double dist = distancesFixed[i * j * k];
-						if (dist < _pixelClusterBestDistances[i * j]) {
-							_pixelClusterBestDistances[i * j] = dist;
-							_pixelClusterIndices[i * j] = k;
+						size_t distIdx = i + j * _imgW + k * _imgW * _imgH;
+						double dist = distancesFixed[distIdx];
+						if (dist < _pixelClusterBestDistances[i + j * _imgW]) {
+							_pixelClusterBestDistances[i + j * _imgW] = dist;
+							_pixelClusterIndices[i + j * _imgW] = k;
 						}
 					}
 				}
@@ -168,7 +171,7 @@ namespace SLIC
 
 			for (size_t i = 0; i < _imgW; ++i) {
 				for (size_t j = 0; j < _imgH; ++j) {
-					size_t clIdx = _pixelClusterIndices[i * j];
+					size_t clIdx = _pixelClusterIndices[i + j * _imgW];
 					_aClusters[clIdx]._aPixels.push_back(P2D(i, j));
 				}
 			}
@@ -185,8 +188,8 @@ namespace SLIC
 					double r, g, b;
 					_pImage->Get(px.x, px.y, r, g, b);
 
-					x += px.x;
-					y += px.y;
+					x += static_cast<double>(px.x);
+					y += static_cast<double>(px.y);
 					sumR += r;
 					sumG += g;
 					sumB += b;
@@ -194,6 +197,8 @@ namespace SLIC
 
 				cl.x = x / nPixels;
 				cl.y = y / nPixels;
+				cl.sx = static_cast<size_t>(std::round(cl.x));
+				cl.sy = static_cast<size_t>(std::round(cl.y));
 				cl.l = sumR / nPixels;
 				cl.a = sumG / nPixels;
 				cl.b = sumB / nPixels;
@@ -225,7 +230,7 @@ namespace SLIC
 			}
 		}
 
-		Channel ch(_imgW * 2, _imgH);
+		Channel ch(_imgW * 3, _imgH);
 		ImageRGB im(ch, ch, ch);
 
 		for (size_t i = 0; i < _imgW; ++i) {
@@ -233,6 +238,7 @@ namespace SLIC
 				double r, g, b;
 				_pImage->Get(i, j, r, g, b);
 				im.Set(i, j, r, g, b);
+				im.Set(i + _imgW, j, r, g, b);
 			}
 		}
 
@@ -251,7 +257,7 @@ namespace SLIC
 					(j > 0 && aaCI[i][j] != aaCI[i][j - 1]) ||
 					(j + 1 < _imgH && aaCI[i][j] != aaCI[i][j + 1])
 					) {
-					im.Set(i, j, 1.0, 0.0, 0.0);
+					im.Set(i + _imgW, j, 1.0, 0.0, 0.0);
 				}
 			}
 		}
@@ -269,7 +275,7 @@ namespace SLIC
 							return;
 
 						for (const auto& px : _aClusters[i]._aPixels) {
-							im.Set(px.x + _imgW, px.y, r, g, b);
+							im.Set(px.x + _imgW + _imgW, px.y, r, g, b);
 						}
 
 						i++;
