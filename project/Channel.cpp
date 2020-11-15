@@ -117,7 +117,6 @@ double Channel::FindMedian() const {
 
 double Channel::FindSigma() const {
   double mean = FindMean();
-  double mean2 = mean*mean;
   double sigma = 0.0;
   for (size_t i = 0; i < _w; ++i) {
     for (size_t j = 0; j < _h; ++j) {

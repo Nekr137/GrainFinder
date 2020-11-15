@@ -82,9 +82,6 @@ namespace SLIC
 			std::vector<double> distancesFixed(_imgW * _imgH * nClusters-1, 1e100);
 
 			std::cout << "\n [ SLIC ] iter: " << iter << " of " << slicIterationsCnt;
-			// 
-			for (auto& cl : _aClusters)
-				cl._aPixels.clear();
 
 			// x, y, clusterIdx
 			std::cout << "\n [ SLIC ]\t Find all distances from pixels to clusters";
@@ -108,6 +105,13 @@ namespace SLIC
 			for (size_t k = 0; k < _aClusters.size(); ++k) {
 
 				const Cluster& cl = _aClusters[k];
+
+				if (cl._aPixels.empty())
+					continue;
+
+				double meanBr, sigmaBr;
+				FindClusterColorParams(cl, meanBr, sigmaBr);
+
 				size_t stX, stY, enX, enY;
 				FindClusterBorders(cl, stX, enX, stY, enY);
 
@@ -124,19 +128,20 @@ namespace SLIC
 
 						n -= 1;
 
-						double sum = 0.0, max = 0.0;
-						for (size_t m = 1; m < n; ++m) {
-							size_t distIdx = xx[m] + yy[m] * _imgW + k * _imgW * _imgH;
-							double dist = distances[distIdx];
-							sum += dist;
-							if (max < dist) max = dist;
+						double brightnessError = 0;
+						for (size_t m = 0; m < n; ++m) {
+							double r, g, b;
+							_pImage->Get(xx[m], yy[m], r, g, b);
+							double br = (r + g + b) / 3.0;
+							if (br > meanBr + 1.0 * sigmaBr || br < meanBr - 1.0 * sigmaBr)
+								brightnessError += 1.0;
 						}
-
-						// additive = max / mean
-						double additive = max / sum * static_cast<double>(n);
+						//std::cout << "\nbrightnessError = " << brightnessError << ", n = " << n;
+						brightnessError /= static_cast<double>(n);
+						
 						size_t distIdx = i + j * _imgW + k * _imgW * _imgH;
 						double& distance = distancesFixed[distIdx];
-						distance += 0.0 * additive;
+						distance += 0.5 * distance * brightnessError;
 					}
 				}
 			}
@@ -286,6 +291,33 @@ namespace SLIC
 
 		showGrains();
 		im.Show();
+	}
+
+	void Slic::FindClusterColorParams(const Cluster& iCLuster, double& oMean, double& oSigma) {
+
+		double sum = 0.0;
+
+		size_t n = iCLuster._aPixels.size();
+		std::vector<double> aBr(n);
+		for (size_t i = 0; i < n; ++i) {
+			double r, g, b;
+			P2D p = iCLuster._aPixels[i];
+			_pImage->Get(p.x, p.y, r, g, b);
+			double br = (r + g + b) / 3.0;
+			aBr[i] = br;
+			sum += br;
+		}
+
+		double nd = static_cast<double>(n);
+		oMean = sum / nd;
+
+		oSigma = 0.0;
+		for (double br : aBr) {
+			double dif = br - oMean;
+			oSigma += dif*dif;
+		}
+
+		oSigma = std::sqrt(oSigma / n);
 	}
 };
 

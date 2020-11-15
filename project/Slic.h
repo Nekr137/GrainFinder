@@ -41,6 +41,7 @@ namespace SLIC
 		double FindEuqlDist(const Cluster& iCl, const P2D& iPixel);
 		double FindColorDist(const Cluster& iCl, const P2D& iPixel);
 		void FindClusterBorders(const Cluster& iCLuster, size_t& oLeft, size_t& oRight, size_t& oTop, size_t& oBottom);
+		void FindClusterColorParams(const Cluster& iCLuster, double& oMean, double& oSigma);
 
 		std::vector<Cluster> _aClusters;
 		std::vector<size_t> _pixelClusterIndices;
