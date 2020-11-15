@@ -162,6 +162,38 @@ namespace SLIC
 			}
 		}
 
+		size_t n = _aClusters.size();
+		for (size_t i = n-1; i > 0; --i) {
+
+			Cluster& cl_i = _aClusters[i];
+			double mean_i, sigma_i;
+			FindClusterColorParams(cl_i, mean_i, sigma_i);
+
+			for (size_t j = i-1; j > 0; --j) {
+				if (i == j)
+					continue;
+			
+				Cluster& cl_j = _aClusters[j];
+				double mean_j, sigma_j;
+				FindClusterColorParams(cl_j, mean_j, sigma_j);
+
+				if (std::abs(mean_j - mean_i) < 1.0 * sigma_i) {
+					cl_j._aPixels.insert(cl_j._aPixels.end(), cl_i._aPixels.begin(), cl_i._aPixels.end());
+					cl_i._aPixels.clear();
+					break;
+				}
+			}
+		}
+
+
+		// Write clusters info
+		std::cout << "\nClusters:";
+		for (const auto& cl : _aClusters) {
+			double mean, sigma;
+			FindClusterColorParams(cl, mean, sigma);
+			std::cout << "\ncluster: " << mean << " " << sigma;
+		}
+
 		return true;
 	}
 
