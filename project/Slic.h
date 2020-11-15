@@ -16,15 +16,15 @@ namespace SLIC
 		double x = 0, y = 0, z = 0;
 	};
 	struct Cluster {
-		Cluster() {}
 		Cluster(double l, double a, double b, double x, double y) {
 			this->l = l; this->a = a; this->b = b; this->x = x; this->y = y;
+			sx = static_cast<size_t>(std::round(x));
+			sy = static_cast<size_t>(std::round(y));
 		}
-		void GetSize(size_t& oW, size_t& oH) const;
-		bool IsBorderPixel(size_t pxlIdx) const;
 		std::vector<P2D> _aPixels;
 		double l = 0.0, a = 0.0, b = 0.0;
 		double x = 0.0, y = 0.0;
+		size_t sx = 0, sy = 0;
 	};
 
 
@@ -40,13 +40,15 @@ namespace SLIC
 		double ClusterToPixelDist(const Cluster& iCl, const P2D& iPixel);
 		double FindEuqlDist(const Cluster& iCl, const P2D& iPixel);
 		double FindColorDist(const Cluster& iCl, const P2D& iPixel);
-		void FindLine(int iX0, int iY0, int iX1, int iY1, std::vector<int>& oX, std::vector<int>& oY);
-		double LineGradient(const Cluster& iCl, const P2D& iPixel);
-		void DrawPoint(ImageRGB& ioImage, const int x, const int y, const P3D iColor, const int iSize) const;
+		void FindClusterBorders(const Cluster& iCLuster, size_t& oLeft, size_t& oRight, size_t& oTop, size_t& oBottom);
 
 		std::vector<Cluster> _aClusters;
+		std::vector<size_t> _pixelClusterIndices;
+		std::vector<double> _pixelClusterBestDistances;
 		const ImageRGB* _pImage;
 		size_t _imgW = 0, _imgH = 0;
-		double _S, _m;
+		size_t _S;
+		double _m;
+		size_t _countOfS = 2;
 	};
 };

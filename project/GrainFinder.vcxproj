@@ -110,6 +110,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathUtils.cpp" />
     <ClCompile Include="Slic.cpp" />
+    <ClCompile Include="SlicUtils.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Visualizer.cpp" />
   </ItemGroup>
@@ -122,6 +123,7 @@
     <ClInclude Include="ImageRGB.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="Slic.h" />
+    <ClInclude Include="SlicUtils.h" />
     <ClInclude Include="tests.h" />
     <ClInclude Include="Treatments.h" />
     <ClInclude Include="Utils.h" />
