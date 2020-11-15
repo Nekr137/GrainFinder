@@ -79,7 +79,6 @@ namespace SLIC
 
 			size_t nClusters = _aClusters.size();
 			std::vector<double> distances(_imgW * _imgH * nClusters-1, 1e100);
-			std::vector<double> distancesFixed(_imgW * _imgH * nClusters-1, 1e100);
 
 			std::cout << "\n [ SLIC ] iter: " << iter << " of " << slicIterationsCnt;
 
@@ -100,54 +99,7 @@ namespace SLIC
 				}
 			}
 
-			std::cout << "\n [ SLIC ]\t Take borders into account";
-			distancesFixed = distances;
-			for (size_t k = 0; k < _aClusters.size(); ++k) {
-
-				const Cluster& cl = _aClusters[k];
-
-				if (cl._aPixels.empty())
-					continue;
-
-				double meanBr, sigmaBr;
-				FindClusterColorParams(cl, meanBr, sigmaBr);
-
-				size_t stX, stY, enX, enY;
-				FindClusterBorders(cl, stX, enX, stY, enY);
-
-				for (size_t i = stX; i < enX; ++i) {
-					for (size_t j = stY; j < enY; ++j) {
-
-						std::vector<int> xx, yy;
-						FindLine(cl.sx, cl.sy, i, j, xx, yy);
-
-						size_t n = xx.size();
-
-						if (n < 2)
-							continue;
-
-						n -= 1;
-
-						double brightnessError = 0;
-						for (size_t m = 0; m < n; ++m) {
-							double r, g, b;
-							_pImage->Get(xx[m], yy[m], r, g, b);
-							double br = (r + g + b) / 3.0;
-							if (br > meanBr + 1.0 * sigmaBr || br < meanBr - 1.0 * sigmaBr)
-								brightnessError += 1.0;
-						}
-						//std::cout << "\nbrightnessError = " << brightnessError << ", n = " << n;
-						brightnessError /= static_cast<double>(n);
-						
-						size_t distIdx = i + j * _imgW + k * _imgW * _imgH;
-						double& distance = distancesFixed[distIdx];
-						distance += 0.5 * distance * brightnessError;
-					}
-				}
-			}
-
 			std::cout << "\n [ SLIC ]\t Compare all distances";
-
 			for (size_t i = 0; i < N; ++i)
 				_pixelClusterBestDistances[i] = 1e100;
 
@@ -160,7 +112,7 @@ namespace SLIC
 				for (size_t i = stX; i < enX; ++i) {
 					for (size_t j = stY; j < enY; ++j) {
 						size_t distIdx = i + j * _imgW + k * _imgW * _imgH;
-						double dist = distancesFixed[distIdx];
+						double dist = distances[distIdx];
 						if (dist < _pixelClusterBestDistances[i + j * _imgW]) {
 							_pixelClusterBestDistances[i + j * _imgW] = dist;
 							_pixelClusterIndices[i + j * _imgW] = k;
