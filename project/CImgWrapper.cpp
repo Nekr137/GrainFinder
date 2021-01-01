@@ -33,7 +33,7 @@ void CImgWrapper::Save(const std::string& iFilename) {
 	_im.save(iFilename.c_str());
 }
 
-void CImgWrapper::Show(const std::string& iTitle) {
+void CImgWrapper::Show(const std::string& iTitle, const int milliseconds /* = -1 */) {
 
 	std::cout << "\nShowing an image...";
 	CImgDisplay main_disp(_im, iTitle.c_str());
@@ -43,7 +43,12 @@ void CImgWrapper::Show(const std::string& iTitle) {
 
 	while (!main_disp.is_closed())
 	{
-		main_disp.wait();
+		if (milliseconds != -1) {
+			main_disp.wait(milliseconds);
+			return;
+		}
+		else
+			main_disp.wait();
 
 		if (main_disp.button() && main_disp.mouse_y() >= 0 && main_disp.mouse_x() >= 0) {
 

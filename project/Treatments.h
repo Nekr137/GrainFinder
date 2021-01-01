@@ -11,6 +11,7 @@
 #include "MathUtils.h"
 #include <algorithm>
 #include "Slic.h"
+#include "ClusterProcessor.h"
 
 using namespace std;
 
@@ -48,6 +49,12 @@ void treatment2(const std::string& iFile, const std::string& oFolder, const size
 	SLIC::Slic slic(&rgb);
 	slic.Perform(iGrainsCnt, iCompactness);
 	slic.Show();
+
+	const std::vector<Cluster>& aCl = slic.GetClustersRef();
+
+	ClusterProcessor clpr(aCl);
+	clpr.Perform();
+
 }
 
 

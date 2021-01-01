@@ -22,7 +22,7 @@ public:
 	bool Read(const std::string& iFilename);
 
 	void Save(const std::string& iFilename);
-	void Show(const std::string& iTitle = "title");
+	void Show(const std::string& iTitle = "title", const int milliseconds = -1);
 
 	void DrawLine(int x1, int y1, int x2, int y2, const unsigned char* color);
 

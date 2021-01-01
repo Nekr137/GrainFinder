@@ -67,7 +67,7 @@ namespace SLIC
 				size_t j = static_cast<size_t>(std::round(h));
 
 				_pImage->Get(i, j, r, g, b);
-				Cluster cl(r, g, b, w, h);
+				Cluster cl(r, g, b, w, h, _pImage);
 				_aClusters.push_back(cl);
 
 				// to do: Move
@@ -162,37 +162,21 @@ namespace SLIC
 			}
 		}
 
-		size_t n = _aClusters.size();
-		for (size_t i = n-1; i > 0; --i) {
-
-			Cluster& cl_i = _aClusters[i];
-			double mean_i, sigma_i;
-			FindClusterColorParams(cl_i, mean_i, sigma_i);
-
-			for (size_t j = i-1; j > 0; --j) {
-				if (i == j)
-					continue;
-			
-				Cluster& cl_j = _aClusters[j];
-				double mean_j, sigma_j;
-				FindClusterColorParams(cl_j, mean_j, sigma_j);
-
-				if (std::abs(mean_j - mean_i) < 1.0 * sigma_i) {
-					cl_j._aPixels.insert(cl_j._aPixels.end(), cl_i._aPixels.begin(), cl_i._aPixels.end());
-					cl_i._aPixels.clear();
-					break;
-				}
+		// Remove empty clusters
+		for (size_t i = _aClusters.size(); i > 0; --i) {
+			if (_aClusters[i - 1]._aPixels.empty()) {
+				_aClusters.erase(_aClusters.begin() + i - 1);
+				std::cout << "\nEmpty";
 			}
 		}
 
-
 		// Write clusters info
-		std::cout << "\nClusters:";
-		for (const auto& cl : _aClusters) {
-			double mean, sigma;
-			FindClusterColorParams(cl, mean, sigma);
-			std::cout << "\ncluster: " << mean << " " << sigma;
-		}
+		//std::cout << "\nClusters:";
+		//for (const auto& cl : _aClusters) {
+		//	double mean, sigma;
+		//	cl.FindClusterColorParams(mean, sigma);
+		//	std::cout << "\ncluster: " << mean << " " << sigma;
+		//}
 
 		return true;
 	}
@@ -241,10 +225,10 @@ namespace SLIC
 			for (size_t j = 0; j < _imgH; ++j){
 
 				if (
-					(i > 0 && aaCI[i][j] != aaCI[i - 1][j]) ||
-					(i + 1 < _imgW && aaCI[i][j] != aaCI[i + 1][j]) ||
-					(j > 0 && aaCI[i][j] != aaCI[i][j - 1]) ||
-					(j + 1 < _imgH && aaCI[i][j] != aaCI[i][j + 1])
+					(i > 0         && aaCI[i][j] != aaCI[i-1][j]) ||
+					(i + 1 < _imgW && aaCI[i][j] != aaCI[i+1][j]) ||
+					(j > 0         && aaCI[i][j] != aaCI[i][j-1]) ||
+					(j + 1 < _imgH && aaCI[i][j] != aaCI[i][j+1])
 					) {
 					im.Set(i + _imgW, j, 1.0, 0.0, 0.0);
 				}
@@ -275,33 +259,6 @@ namespace SLIC
 
 		showGrains();
 		im.Show();
-	}
-
-	void Slic::FindClusterColorParams(const Cluster& iCLuster, double& oMean, double& oSigma) {
-
-		double sum = 0.0;
-
-		size_t n = iCLuster._aPixels.size();
-		std::vector<double> aBr(n);
-		for (size_t i = 0; i < n; ++i) {
-			double r, g, b;
-			P2D p = iCLuster._aPixels[i];
-			_pImage->Get(p.x, p.y, r, g, b);
-			double br = (r + g + b) / 3.0;
-			aBr[i] = br;
-			sum += br;
-		}
-
-		double nd = static_cast<double>(n);
-		oMean = sum / nd;
-
-		oSigma = 0.0;
-		for (double br : aBr) {
-			double dif = br - oMean;
-			oSigma += dif*dif;
-		}
-
-		oSigma = std::sqrt(oSigma / n);
 	}
 };
 

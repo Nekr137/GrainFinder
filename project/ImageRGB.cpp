@@ -46,10 +46,10 @@ void ImageRGB::Save(const std::string& iFilename) {
 	Converter::Convert(*this, wrapper);
 	wrapper.Save(iFilename);
 }
-void ImageRGB::Show(const std::string& iTitle) {
+void ImageRGB::Show(const std::string& iTitle, const int milliseconds /*= -1*/) {
 	CImgWrapper wrapper;
 	Converter::Convert(*this, wrapper);
-	wrapper.Show(iTitle);
+	wrapper.Show(iTitle, milliseconds);
 }
 bool ImageRGB::AskUserAboutAColor(double& oR, double& oG, double& oB) {
 	CImgWrapper wrapper;

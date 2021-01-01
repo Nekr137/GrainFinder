@@ -29,7 +29,7 @@ public:
 	Channel GetBrightness(const Brightness& iBrightnessType);
 
 	void Save(const std::string& iFilename);
-	void Show(const std::string& iTitle = "title");
+	void Show(const std::string& iTitle = "title", const int milliseconds = -1);
 
 	bool AskUserAboutAColor(double& oR, double& oG, double& oB);
 

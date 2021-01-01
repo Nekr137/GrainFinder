@@ -103,12 +103,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Channel.cpp" />
+    <ClCompile Include="Cluster.cpp" />
+    <ClCompile Include="ClusterProcessor.cpp" />
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="CImgWrapper.cpp" />
+    <ClCompile Include="Edge.cpp" />
     <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="ImageRGB.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathUtils.cpp" />
+    <ClCompile Include="P2D.cpp" />
+    <ClCompile Include="Region.cpp" />
     <ClCompile Include="Slic.cpp" />
     <ClCompile Include="SlicUtils.cpp" />
     <ClCompile Include="Utils.cpp" />
@@ -117,11 +122,16 @@
   <ItemGroup>
     <ClInclude Include="Channel.h" />
     <ClInclude Include="CImg.h" />
+    <ClInclude Include="Cluster.h" />
+    <ClInclude Include="ClusterProcessor.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="CImgWrapper.h" />
+    <ClInclude Include="Edge.h" />
     <ClInclude Include="FileUtils.h" />
     <ClInclude Include="ImageRGB.h" />
     <ClInclude Include="MathUtils.h" />
+    <ClInclude Include="P2D.h" />
+    <ClInclude Include="Region.h" />
     <ClInclude Include="Slic.h" />
     <ClInclude Include="SlicUtils.h" />
     <ClInclude Include="tests.h" />
